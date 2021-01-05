@@ -1,41 +1,36 @@
-use std::fmt::Display;
-use serde::export::Formatter;
-use std::fmt;
+use smallvec::alloc::sync::Arc;
+use crate::NodeId;
 
-pub type IResult<T> = std::result::Result<T, Error>;
+#[derive(Debug, Error, Clone)]
+pub enum RaftError {
+    #[error("Storage error: {0}")]
+    Storage(Arc<anyhow::Error>),
 
-#[derive(Debug)]
-pub struct Error {
-    err: ErrorKind,
+    #[error("This Raft has already been initialized.")]
+    AlreadyInitialized,
+
+    #[error("Node '{0}' is unregistered.")]
+    UnknownNode(NodeId),
+
+    #[error("Node '{0} is already registered.'")]
+    NodeAlreadyRegistered(NodeId),
+
+    #[error("Forward to leader: {0:?}")]
+    ForwardToLeader(Option<NodeId>),
+
+    #[error("Shutdown")]
+    Shutdown,
 }
 
-#[derive(Debug)]
-pub enum ErrorKind {
-    NotFound,
-    NotLeader,
-    InvalidRequest,
-}
+impl RaftError {
+    #[inline]
+    pub(crate) fn storage(err: anyhow::Error) -> Self {
+        Self::Storage(Arc::new(err))
+    }
 
-impl ErrorKind {
-    pub fn as_str(&self) -> &'static str {
-        match *self {
-            ErrorKind::NotFound => "key not found",
-            ErrorKind::NotLeader => "leader not found",
-            ErrorKind::InvalidRequest => "request is invalid",
-        }
+    pub fn is_shutdown(&self) -> bool {
+        matches!(self,RaftError::Shutdown)
     }
 }
 
-impl Display for ErrorKind {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
-    }
-}
-
-impl From<ErrorKind> for Error {
-    fn from(e: ErrorKind) -> Self {
-        Error {
-            err: e,
-        }
-    }
-}
+pub type IResult<T, E = RaftError> = std::result::Result<T, E>;
