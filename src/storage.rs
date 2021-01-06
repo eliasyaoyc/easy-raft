@@ -26,7 +26,7 @@ pub trait Storage<N, D>: Send + Sync + 'static {
 
     fn get_log_entries(&self, start: LogIndex, end: LogIndex) -> StorageResult<Vec<Entry<N, D>>>;
 
-    fn delete_logs_from(&self, start: LogIndex, end: LogIndex) -> StorageResult<()>;
+    fn delete_logs_from(&self, start: LogIndex, end: Option<LogIndex>) -> StorageResult<()>;
 
     fn append_entries_to_log(&self, entries: &[Entry<N, D>]) -> StorageResult<()>;
 
