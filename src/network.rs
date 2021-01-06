@@ -1,4 +1,5 @@
 use crate::{TermId, NodeId, LogIndex, Entry};
+use serde::{Serialize,Deserialize};
 
 pub type NetworkResult<T> = anyhow::Result<T>;
 
@@ -48,7 +49,7 @@ pub struct InstallSnapshotResponse {
     pub term: TermId,
 }
 
-#[async_traif]
+#[async_trait::async_trait]
 pub trait Network<N, D>: Send + Sync + Unpin {
     async fn vote(
         &self,

@@ -7,7 +7,6 @@ use tokio::macros::support::Pin;
 
 type FuturesOrdered<T> = futures::stream::FuturesOrdered<BoxFuture<'static, T>>;
 
-
 pub struct OrderedGroup<T>(FnvHashMap<NodeId, FuturesOrdered<T>>);
 
 impl<T> Default for OrderedGroup<T> {
@@ -19,13 +18,13 @@ impl<T> Default for OrderedGroup<T> {
 impl<T> OrderedGroup<T> {
     pub fn add<F>(&mut self, id: NodeId, fut: F)
         where
-            F: Future<Output=T> + Send + 'static,
+            F: Future<Output = T> + Send + 'static,
     {
         match self.0.get_mut(&id) {
             Some(futs) => futs.push(fut.boxed()),
             None => {
                 let mut futs = FuturesOrdered::default();
-                futs.push(futs.boxed());
+                futs.push(fut.boxed());
                 self.0.insert(id, futs);
             }
         }

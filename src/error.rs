@@ -1,5 +1,6 @@
 use smallvec::alloc::sync::Arc;
 use crate::NodeId;
+use thiserror::Error;
 
 #[derive(Debug, Error, Clone)]
 pub enum RaftError {

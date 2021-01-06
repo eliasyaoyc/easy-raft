@@ -15,7 +15,7 @@ mod types;
 
 pub use config::Config;
 pub use error::{RaftError, IResult};
-pub use network::{AppendEntriesRequest, AppendEntriesResponse, Network, NetworkResult, VoteRequest, VoteRequest};
+pub use network::{AppendEntriesRequest, AppendEntriesResponse, Network, NetworkResult, VoteRequest, VoteResponse,InstallSnapshotRequest,InstallSnapshotResponse};
 pub use raft::Raft;
 pub use storage::{HardState, InitialState, Storage, StorageResult};
 pub use types::{Entry, EntryDetail, LogIndex, MemberShipConfig, Metrics, NodeId, Role, TermId};

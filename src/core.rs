@@ -18,10 +18,9 @@ use crate::ordered_group::OrderedGroup;
 use crate::runtime::Delay;
 use crate::{
     AppendEntriesRequest, AppendEntriesResponse, Config, Entry, EntryDetail, HardState, LogIndex,
-    MemberShipConfig, Metrics, Network, NetworkIResult, NodeId, RaftError, IResult, Role, Storage,
+    MemberShipConfig, Metrics, Network, NetworkResult, NodeId, RaftError, IResult, Role, Storage,
     TermId, VoteRequest, VoteResponse,
 };
-use crate::network::VoteResponse;
 
 const MESSAGE_CHANNEL_SIZE: usize = 32;
 
@@ -51,7 +50,7 @@ pub struct Core<N, D> {
     election_timeout: Option<Delay>,
     next_index: FnvHashMap<NodeId, u64>,
     match_index: FnvHashMap<NodeId, u64>,
-    vote_futures: OrderedGroup<NetworkIResult<(u64, u64, VoteResponse)>>,
+    vote_futures: OrderedGroup<NetworkResult<(u64, u64, VoteResponse)>>,
     append_entries_futures: Option<FnvHashMap<NodeId, AppendEntriesFuture>>,
     next_append_entries_futures: FnvHashMap<NodeId, bool>,
     waker: AtomicWaker,
@@ -678,7 +677,7 @@ impl<N, D> Core<N, D>
                 reply.send(self.handle_append_entries(req)).ok();
                 Ok(())
             }
-            Message::InstallSnapshot { req, reply } => {
+            Message::InstallSnapshot { req:_, reply:_ } => {
                 Ok(())
             }
             Message::ClientRead { reply } => {

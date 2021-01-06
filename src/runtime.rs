@@ -16,7 +16,7 @@ mod tokio_runtime {
     impl Future for Delay {
         type Output = ();
 
-        fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
             self.0.poll_unpin(cx)
         }
     }
@@ -26,7 +26,7 @@ mod tokio_runtime {
     impl<T> Future for JoinHandle<T> {
         type Output = T;
 
-        fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
             match self.0.poll_unpin(cx) {
                 Poll::Ready(res) => Poll::Ready(res.unwrap()),
                 Poll::Pending => Poll::Pending,

@@ -3,6 +3,8 @@ use fnv::FnvHashMap;
 use std::sync::Arc;
 use std::fmt::Display;
 use smallvec::alloc::fmt::Formatter;
+use serde::{Deserialize, Serialize};
+
 
 pub type NodeId = u64;
 pub type TermId = u64;

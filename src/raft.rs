@@ -32,7 +32,7 @@ impl<N, D> Raft<N, D>
         id: NodeId,
         config: Arc<Config>,
         storage: Arc<dyn Storage<N, D>>,
-        network: Arc<dyn Networ<N, D>>,
+        network: Arc<dyn Network<N, D>>,
     ) -> IResult<Self> {
         let (core, tx) = Core::new(name, id, config, storage, network)?;
         let join_handle = spawn(async move {
@@ -149,8 +149,8 @@ impl<N, D> Raft<N, D>
         rx.await.map_err(|_| RaftError::Shutdown)?
     }
 
-    pub async fn shutdown(mut self) -> IResult<()> {
-        let (tx, rx) = oneshot::channel();
+    pub async fn shutdown(self) -> IResult<()> {
+        let (_tx, rx) = oneshot::channel();
         self.tx
             .clone()
             .send(Message::Shutdown)

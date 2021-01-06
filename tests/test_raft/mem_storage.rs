@@ -13,6 +13,7 @@ struct Inner {
     kvs: HashMap<String, i32>,
 }
 
+#[derive(Default)]
 pub struct MemoryStorage {
     inner: RwLock<Inner>,
 }
@@ -45,15 +46,17 @@ impl Storage<(), Action> for MemoryStorage {
     }
 
     fn get_log_entries(&self, start: LogIndex, end: LogIndex) -> StorageResult<Vec<Entry<(), Action>>> {
-        Ok(self.inner.read()
+        Ok(self
+            .inner
+            .read()
             .logs
             .range(start..end)
-            .map(|_, entry| Entry::clone(entry))
+            .map(|(_, entry)| Entry::clone(entry))
             .collect()
         )
     }
 
-    fn delete_logs_from(&self, start: LogIndex, end: LogIndex) -> StorageResult<()> {
+    fn delete_logs_from(&self, start: LogIndex, end: Option<LogIndex>) -> StorageResult<()> {
         let mut inner = self.inner.write();
         let range = match end {
             Some(end) => inner.logs.range(start..end),
