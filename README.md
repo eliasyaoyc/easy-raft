@@ -1,2 +1,2 @@
 # Rust Raft KV
-A simple raftkv is implemented through the rust language
+A simple raft is implemented through the rust language
